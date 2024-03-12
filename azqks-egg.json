@@ -13,10 +13,10 @@
         "quay.io\/pterodactyl\/core:java_16",
         "quay.io\/pterodactyl\/core:java_11",
         "quay.io\/pterodactyl\/core:java_8",
-        "quay.io\/pterodactyl\/core:nodejs"
+        "quay.io\/pterodactyl\/core:nodejs",
+        "quai.io\/pterodactyl\/core:python"
     ],
     "file_denylist": [
-        "server-icon.png",
         "install.sh"
     ],
     "startup": "bash <(curl -s https://raw.githubusercontent.com/Fex-Development/Fex-multiegg/main/install.sh)",
