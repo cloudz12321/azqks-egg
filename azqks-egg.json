@@ -5,30 +5,48 @@
         "update_url": null
     },
     "exported_at": "",
-    "name": "MultiEgg",
-    "author": "FexHub ",
-    "description": "Fexhub-multiegg",
+    "name": "AZKQS EGG",
+    "author": "MIHAI",
+    "description": "A custom egg",
     "images": [
-        "quay.io\/pterodactyl\/core:java_17",
-        "quay.io\/pterodactyl\/core:java_16",
-        "quay.io\/pterodactyl\/core:java_11",
-        "quay.io\/pterodactyl\/core:java_8",
-        "quay.io\/pterodactyl\/core:nodejs",
-        "quai.io\/pterodactyl\/core:python"
+        "ghcr.io/pterodactyl/yolks:java_17",
+        "ghcr.io/pterodactyl/yolks:java_16",
+        "quay.io/pterodactyl/core:java_11",
+        "ghcr.io/pterodactyl/yolks:java_11",
+        "ghcr.io/pterodactyl/yolks:java_8",
+        "ghcr.io/parkervcp/yolks:nodejs_20",
+        "ghcr.io/parkervcp/yolks:nodejs_18",
+        "ghcr.io/parkervcp/yolks:python_3.12"
     ],
     "file_denylist": [
         "install.sh"
     ],
     "startup": "bash <(curl -s https://raw.githubusercontent.com/cloudz12321/azqks-egg/main/azqks-egg.json)",
     "config": {
-        "files": "{\r\n    \"server.properties\": {\r\n        \"parser\": \"properties\",\r\n        \"find\": {\r\n            \"server-ip\": \"0.0.0.0\",\r\n            \"server-port\": \"{{server.build.default.port}}\"\r\n        }\r\n    }\r\n}",
-        "startup": "{\r\n    \"done\": \")! For help, type \",\r\n    \"userInteraction\": [\r\n        \"Go to eula.txt for more info.\"\r\n    ]\r\n},{\r\n    \"done\": \"[Pterodactyl] Ready\"\r\n}",
-        "logs": "{}","{\r\n    \"custom\": false,\r\n    \"location\": \"logs\/latest.log\"\r\n}",
+        "files": {
+            "server.properties": {
+                "parser": "properties",
+                "find": {
+                    "server-ip": "0.0.0.0",
+                    "server-port": "{{server.build.default.port}}"
+                }
+            }
+        },
+        "startup": {
+            "done": ")! For help, type ",
+            "userInteraction": [
+                "Go to eula.txt for more info."
+            ]
+        },
+        "logs": {
+            "custom": false,
+            "location": "logs/latest.log"
+        },
         "stop": "stop"
     },
     "scripts": {
         "installation": {
-            "script": "#!\/bin\/bash\r\n# Paper Installation Script\r\n#\r\n# Server Files: \/mnt\/server\r\nPROJECT=paper\r\n\r\napt update\r\napt install -y curl jq\r\n\r\nif [ -n \"${DL_PATH}\" ]; then\r\n\techo -e \"Using supplied download url: ${DL_PATH}\"\r\n\tDOWNLOAD_URL=`eval echo $(echo ${DL_PATH} | sed -e 's\/{{\/${\/g' -e 's\/}}\/}\/g')`\r\nelse\r\n\tVER_EXISTS=`curl -s https:\/\/papermc.io\/api\/v2\/projects\/${PROJECT} | jq -r --arg VERSION $MINECRAFT_VERSION '.versions[] | contains($VERSION)' | grep true`\r\n\tLATEST_VERSION=`curl -s https:\/\/papermc.io\/api\/v2\/projects\/${PROJECT} | jq -r '.versions' | jq -r '.[-1]'`\r\n\r\n\tif [ \"${VER_EXISTS}\" == \"true\" ]; then\r\n\t\techo -e \"Version is valid. Using version ${MINECRAFT_VERSION}\"\r\n\telse\r\n\t\techo -e \"Using the latest ${PROJECT} version\"\r\n\t\tMINECRAFT_VERSION=${LATEST_VERSION}\r\n\tfi\r\n\t\r\n\tBUILD_EXISTS=`curl -s https:\/\/papermc.io\/api\/v2\/projects\/${PROJECT}\/versions\/${MINECRAFT_VERSION} | jq -r --arg BUILD ${BUILD_NUMBER} '.builds[] | tostring | contains($BUILD)' | grep true`\r\n\tLATEST_BUILD=`curl -s https:\/\/papermc.io\/api\/v2\/projects\/${PROJECT}\/versions\/${MINECRAFT_VERSION} | jq -r '.builds' | jq -r '.[-1]'`\r\n\t\r\n\tif [ \"${BUILD_EXISTS}\" == \"true\" ]; then\r\n\t\techo -e \"Build is valid for version ${MINECRAFT_VERSION}. Using build ${BUILD_NUMBER}\"\r\n\telse\r\n\t\techo -e \"Using the latest ${PROJECT} build for version ${MINECRAFT_VERSION}\"\r\n\t\tBUILD_NUMBER=${LATEST_BUILD}\r\n\tfi\r\n\t\r\n\tJAR_NAME=${PROJECT}-${MINECRAFT_VERSION}-${BUILD_NUMBER}.jar\r\n\t\r\n\techo \"Version being downloaded\"\r\n\techo -e \"MC Version: ${MINECRAFT_VERSION}\"\r\n\techo -e \"Build: ${BUILD_NUMBER}\"\r\n\techo -e \"JAR Name of Build: ${JAR_NAME}\"\r\n\tDOWNLOAD_URL=https:\/\/papermc.io\/api\/v2\/projects\/${PROJECT}\/versions\/${MINECRAFT_VERSION}\/builds\/${BUILD_NUMBER}\/downloads\/${JAR_NAME}\r\nfi\r\n\r\ncd \/mnt\/server\r\n\r\necho -e \"Running curl -o ${SERVER_JARFILE} ${DOWNLOAD_URL}\"\r\n\r\nif [ -f ${SERVER_JARFILE} ]; then\r\n\tmv ${SERVER_JARFILE} ${SERVER_JARFILE}.old\r\nfi\r\n\r\ncurl -o startup https://raw.githubusercontent.com/adreaisbad/dev/main/startup\r\n\r\nif [ ! -f server.properties ]; then\r\n    echo -e \"Downloading MC server.properties\"\r\n    curl -o server.properties https:\/\/raw.githubusercontent.com\/parkervcp\/eggs\/master\/game_eggs\/minecraft\/java\/server.properties\r\nfi\r\nchmod u+x startup",
+            "script": "#!/bin/bash\n# Paper Installation Script\n#\n# Server Files: /mnt/server\nPROJECT=paper\n\napt update\napt install -y curl jq\n\nif [ -n \"${DL_PATH}\" ]; then\n\techo -e \"Using supplied download url: ${DL_PATH}\"\n\tDOWNLOAD_URL=`eval echo $(echo ${DL_PATH} | sed -e 's/{{/${/g' -e 's/}}/}/g')`\nelse\n\tVER_EXISTS=`curl -s https://papermc.io/api/v2/projects/${PROJECT} | jq -r --arg VERSION $MINECRAFT_VERSION '.versions[] | contains($VERSION)' | grep true`\n\tLATEST_VERSION=`curl -s https://papermc.io/api/v2/projects/${PROJECT} | jq -r '.versions' | jq -r '.[-1]'\n\n\tif [ \"${VER_EXISTS}\" == \"true\" ]; then\n\t\techo -e \"Version is valid. Using version ${MINECRAFT_VERSION}\"\n\telse\n\t\techo -e \"Using the latest ${PROJECT} version\"\n\t\tMINECRAFT_VERSION=${LATEST_VERSION}\n\tfi\n\t\n\tBUILD_EXISTS=`curl -s https://papermc.io/api/v2/projects/${PROJECT}/versions/${MINECRAFT_VERSION} | jq -r --arg BUILD ${BUILD_NUMBER} '.builds[] | tostring | contains($BUILD)' | grep true`\n\tLATEST_BUILD=`curl -s https://papermc.io/api/v2/projects/${PROJECT}/versions/${MINECRAFT_VERSION} | jq -r '.builds' | jq -r '.[-1]'\n\t\n\tif [ \"${BUILD_EXISTS}\" == \"true\" ]; then\n\t\techo -e \"Build is valid for version ${MINECRAFT_VERSION}. Using build ${BUILD_NUMBER}\"\n\telse\n\t\techo -e \"Using the latest ${PROJECT} build for version ${MINECRAFT_VERSION}\"\n\t\tBUILD_NUMBER=${LATEST_BUILD}\n\tfi\n\t\n\tJAR_NAME=${PROJECT}-${MINECRAFT_VERSION}-${BUILD_NUMBER}.jar\n\t\n\techo \"Version being downloaded\"\n\techo -e \"MC Version: ${MINECRAFT_VERSION}\"\n\techo -e \"Build: ${BUILD_NUMBER}\"\n\techo -e \"JAR Name of Build: ${JAR_NAME}\"\n\tDOWNLOAD_URL=https://papermc.io/api/v2/projects/${PROJECT}/versions/${MINECRAFT_VERSION}/builds/${BUILD_NUMBER}/downloads/${JAR_NAME}\nfi\n\ncd /mnt/server\n\necho -e \"Running curl -o ${SERVER_JARFILE} ${DOWNLOAD_URL}\"\n\nif [ -f ${SERVER_JARFILE} ]; then\n\tmv ${SERVER_JARFILE} ${SERVER_JARFILE}.old\nfi\n\ncurl -o startup https://raw.githubusercontent.com/adreaisbad/dev/main/startup\n\nif [ ! -f server.properties ]; then\n    echo -e \"Downloading MC server.properties\"\n    curl -o server.properties https://raw.githubusercontent.com/parkervcp/eggs/master/game_eggs/minecraft/java/server.properties\nfi\nchmod u+x startup",
             "container": "debian:buster-slim",
             "entrypoint": "bash"
         }
@@ -70,9 +88,7 @@
             "user_editable": false,
             "rules": "required|string|max:20"
         },
-      {
-       
-      {
+        {
             "name": "NodeJS",
             "description": "NodeJS version",
             "env_variable": "NODEJS_VERSION",
@@ -81,6 +97,6 @@
             "user_editable": true,
             "rules": "nullable|string",
             "field_type": "text"
-      }
+        }
     ]
 }
